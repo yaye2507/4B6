@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contrôle Robot Rond</title>
+</head>
+<body>
+    <h1>Contrôle Robot Rond</h1>        
+    <button onclick="onClickAvancer()">Avancer</button>
+    <p id="debugTxtId">...</p>
+    
+    <script>    
+        function onClickAvancer() {
+            let moteurs = {
+                isDirGOn: true,
+                isDirDOn: true,
+                isvitGOn: true,
+                isvitDOn: true
+            };
+            postMoteurs(moteurs);
+        }
+
+        async function postMoteurs(moteurs) {
+            const url = '/moteur'; // URL relative au serveur Flask
+            await post(url, moteurs);
+        }
+
+        async function post(url, data) {
+            try {
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                const result = await response.json();
+                document.getElementById('debugTxtId').innerText = result.message;
+            } catch (error) {
+                document.getElementById('debugTxtId').innerText = 'Erreur: ' + error.message;
+            }
+        }
+    </script>
+</body>
+</html>

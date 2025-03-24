@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contrôle Robot Rond</title>
+</head>
+<body>
+
+    <h1>Contrôle Robot Rond</h1>
+
+    <table align="center">
+        <tr>
+            <td></td>
+            <td><button onclick="onClickAvancer()">▲</button></td>
+            <td></td>
+        </tr>
+        <tr>
+            <td><button onclick="onClickGauche()">◄</button></td>
+            <td><button onclick="onClickStop()">⏹</button></td>
+            <td><button onclick="onClickDroite()">►</button></td>
+        </tr>
+        <tr>
+            <td></td>
+            <td><button onclick="onClickReculer()">▼</button></td>
+            <td></td>
+        </tr>
+    </table>
+
+    <p id='debugTxtId'>...</p>
+    <body>
+    
+        <script>    
+            class Moteurs {
+                constructor(isDirGOn, isvitGOn, isDirDOn, isvitDOn) {
+                    this.isDirGOn = isDirGOn;
+                    this.isvitGOn = isvitGOn;
+                    this.isDirDOn = isDirDOn;
+                    this.isvitDOn = isvitDOn;
+                }              
+            }
+
+            function onClickAvancer() {
+                let moteurs = new Moteurs(false, true, false, true);
+                postMoteurs(moteurs);
+            }
+
+            function onClickReculer() {
+                let moteurs = new Moteurs(true, true, true, true);
+                postMoteurs(moteurs);
+            }
+
+            function onClickStop() {
+                let moteurs = new Moteurs(false, false, false, false);
+                postMoteurs(moteurs);
+            }
+
+            function onClickGauche() {
+                let moteurs = new Moteurs(true, true, false, true); // Roue gauche en arrière, droite en avant
+                postMoteurs(moteurs);
+            }
+
+            function onClickDroite() {
+                let moteurs = new Moteurs(false, true, true, true); // Roue gauche en avant, droite en arrière
+                postMoteurs(moteurs);
+            }
+
+            function postMoteurs(moteurs) {
+                const url = 'http://192.168.4.202:5000/moteur';
+                post(url, moteurs);
+            }
+
+            function post(url, data) {
+                const xhr = new XMLHttpRequest();
+                xhr.open('POST', url);
+                xhr.setRequestHeader('Content-Type', 'application/json');
+                const json = JSON.stringify(data);
+                xhr.send(json);
+
+                xhr.onload = function () {
+                    document.getElementById('debugTxtId').innerHTML = 'Réponse: ' + xhr.responseText;
+                };
+
+                xhr.onerror = function () {
+                    document.getElementById('debugTxtId').innerHTML = 'Erreur d\'envoi';
+                };
+
+                document.getElementById('debugTxtId').innerHTML = 'Envoi en cours: ' + json;
+            }
+        </script>
+    </body>
+</html>
